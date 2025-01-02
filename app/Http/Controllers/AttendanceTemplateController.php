@@ -83,22 +83,19 @@ class AttendanceTemplateController extends Controller
         return view('attendance-templates.edit', compact('attendance_template', 'classes', 'subjects', 'days'));
     }
 
-    public function update(UpdateAttendanceTemplateRequest $request, AttendanceTemplate $template)
+    public function update(UpdateAttendanceTemplateRequest $request, AttendanceTemplate $attendance_template)
     {
-        $this->authorize('manage attendance', $template);
-
-        $template->update($request->validated());
-
-        return redirect()
-            ->route('attendance-templates.index')
-            ->with('success', 'Template updated successfully.');
+        $this->authorize('manage attendance', $attendance_template);
+        return $attendance_template->update($request->validated())
+            ? redirect()->route('attendance-templates.index')->with('success', 'Template updated successfully.')
+            : back()->with('error', 'Failed to update template');
     }
 
-    public function destroy(AttendanceTemplate $template)
+    public function destroy(AttendanceTemplate $attendance_template)
     {
-        $this->authorize('manage attendance', $template);
+        $this->authorize('manage attendance', $attendance_template);
 
-        $template->delete();
+        $attendance_template->delete();
 
         return redirect()
             ->route('attendance-templates.index')

@@ -11,7 +11,7 @@ class UpdateSchoolSubjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('manage subjects');
     }
 
     /**
@@ -22,7 +22,13 @@ class UpdateSchoolSubjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:50'],
+            'description' => ['nullable', 'string'],
+            'teacher_id' => ['required', 'exists:users,id'],
+            'classes' => ['nullable', 'array'],
+            'classes.*' => ['exists:school_classes,id'],
+            'is_active' => ['boolean']
         ];
     }
 }

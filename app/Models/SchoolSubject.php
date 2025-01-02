@@ -25,7 +25,10 @@ class SchoolSubject extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany(TeacherProfile::class, 'class_subject', 'subject_id', 'teacher_profile_id');
+        return $this->belongsToMany(User::class, 'class_subject', 'subject_id', 'teacher_profile_id')
+        ->whereHas('roles', function($q) {
+            $q->where('name', 'teacher');
+        });
     }
 
     public function classes()
@@ -36,7 +39,7 @@ class SchoolSubject extends Model
 
     public function attendanceTemplates()
     {
-        return $this->hasMany(AttendanceTemplate::class, 'subject_id');
+        return $this->hasMany(AttendanceTemplate::class, 'school_subject_id');
     }
 
 }

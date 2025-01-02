@@ -18,13 +18,13 @@ class UpdateAttendanceTemplateRequest extends FormRequest
     public function rules()
     {
         return [
-            'school_class_id' => ['sometimes', 'required', 'exists:school_classes,id'],
-            'school_subject_id' => ['sometimes', 'required', 'exists:school_subjects,id'],
-            'teacher_profile_id' => ['sometimes', 'required', 'exists:teacher_profiles,id'],
-            'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'day' => ['sometimes', 'required', 'string', 'in:' . implode(',', array_keys(AttendanceTemplate::getDays()))],
-            'start_time' => ['sometimes', 'required', 'date_format:H:i'],
-            'end_time' => ['sometimes', 'required', 'date_format:H:i', 'after:start_time'],
+            'school_class_id' => ['required', 'exists:school_classes,id'],
+            'school_subject_id' => ['required', 'exists:school_subjects,id'],
+            'teacher_profile_id' => ['required', 'exists:teacher_profiles,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'day' => ['required', 'string', 'in:' . implode(',', array_keys(AttendanceTemplate::getDays()))],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'description' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean']
         ];

@@ -8,13 +8,22 @@ use App\Models\SchoolClass;
 use App\Http\Requests\StoreSchoolSubjectRequest;
 use App\Http\Requests\UpdateSchoolSubjectRequest;
 use App\Models\TeacherProfile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class SchoolSubjectController extends Controller
 {
+    use AuthorizesRequests;
 
     public function index()
     {
         $subjects = SchoolSubject::with(['teachers', 'classes'])
+            ->when(Auth::user()->hasRole('teacher'), function ($query) {
+                $query->whereHas('teachers', function ($q) {
+                    $q->where('teacher_profiles.user_id', Auth::id());
+                });
+            })
             ->latest()
             ->paginate(10);
 
@@ -23,6 +32,8 @@ class SchoolSubjectController extends Controller
 
     public function create()
     {
+        $this->authorize('manage subjects', SchoolSubject::class);
+
         $teachers = User::role('teacher')->get();
         $classes = SchoolClass::where('is_active', true)->get();
 
@@ -31,12 +42,16 @@ class SchoolSubjectController extends Controller
 
     public function store(StoreSchoolSubjectRequest $request)
     {
-        $subject = SchoolSubject::create($request->validated());
+        $this->authorize('manage subjects', SchoolSubject::class);
 
-        if ($request->has('classes')) {
-            // Attach classes dengan teacher_profile_id
-            $attachData = collect($request->classes)->mapWithKeys(function ($classId) use ($request) {
-                return [$classId => ['teacher_profile_id' => TeacherProfile::where('user_id', $request->teacher_id)->first()->id]];
+        $data = $request->validated();
+        $subject = SchoolSubject::create($data);
+
+        if (!empty($data['classes'])) {
+            $teacherProfile = TeacherProfile::where('user_id', $data['teacher_id'])->first();
+
+            $attachData = collect($data['classes'])->mapWithKeys(function ($classId) use ($teacherProfile) {
+                return [$classId => ['teacher_profile_id' => $teacherProfile->id]];
             })->all();
 
             $subject->classes()->attach($attachData);
@@ -48,6 +63,8 @@ class SchoolSubjectController extends Controller
 
     public function edit(SchoolSubject $schoolSubject)
     {
+        $this->authorize('manage subjects', $schoolSubject);
+
         $teachers = User::role('teacher')->get();
         $classes = SchoolClass::where('is_active', true)->get();
         $selectedClasses = $schoolSubject->classes->pluck('id')->toArray();
@@ -56,29 +73,47 @@ class SchoolSubjectController extends Controller
     }
 
     public function update(UpdateSchoolSubjectRequest $request, SchoolSubject $schoolSubject)
-    {
-        $schoolSubject->update($request->validated());
+{
+    $this->authorize('manage subjects', $schoolSubject);
 
-        if ($request->has('classes')) {
-            $schoolSubject->classes()->sync($request->classes);
+    try {
+        DB::beginTransaction();
+        
+        $data = $request->validated();
+        $schoolSubject->update($data);
+
+        if (isset($data['classes'])) {
+            $teacherProfile = TeacherProfile::where('user_id', $data['teacher_id'])->firstOrFail();
+            
+            $syncData = collect($data['classes'])->mapWithKeys(function ($classId) use ($teacherProfile) {
+                return [$classId => ['teacher_profile_id' => $teacherProfile->id]];
+            })->all();
+
+            $schoolSubject->classes()->sync($syncData);
         }
 
-        return redirect()
-            ->route('school-subjects.index')
-            ->with('success', 'Subject updated successfully.');
+        DB::commit();
+        return redirect()->route('school-subjects.index')
+                        ->with('success', 'Subject updated successfully.');
+                        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', 'Failed to update subject: ' . $e->getMessage());
     }
+}
 
     public function destroy(SchoolSubject $schoolSubject)
     {
-        // if ($schoolSubject->attendanceTemplates()->exists()) {
-        //     return back()->with('error', 'Cannot delete subject with existing attendance records.');
-        // }
+        $this->authorize('manage subjects', $schoolSubject);
+
+        if ($schoolSubject->attendanceTemplates()->exists()) {
+            return back()->with('error', 'Cannot delete subject with existing attendance records.');
+        }
 
         $schoolSubject->classes()->detach();
         $schoolSubject->delete();
 
-        return redirect()
-            ->route('school-subjects.index')
+        return redirect()->route('school-subjects.index')
             ->with('success', 'Subject deleted successfully.');
     }
 }
