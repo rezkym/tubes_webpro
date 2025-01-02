@@ -110,6 +110,13 @@
                         </a>
                     @endcan
 
+                    @can('viewAny', App\Models\Attendance::class)
+                        <a href="{{ route('attendance.index') }}" 
+                            class="sidebar-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-check me-2"></i> Attendance
+                        </a>
+                    @endcan
+
                 </nav>
             </div>
 
