@@ -36,7 +36,7 @@ class StudentProfile extends Model
 
     public function schoolClass()
     {
-        return $this->belongsTo(SchoolClass::class);
+        return $this->belongsTo(SchoolClass::class, 'school_class_id');
     }
 
     public function attendances()

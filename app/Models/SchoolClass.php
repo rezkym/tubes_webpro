@@ -24,12 +24,29 @@ class SchoolClass extends Model
 
     public function students()
     {
-        return $this->hasMany(User::class, 'class_id');
+        return $this->hasManyThrough(
+            User::class,
+            StudentProfile::class,
+            'school_class_id', // Foreign key di student_profiles
+            'id', // Local key di users
+            'id', // Local key di school_classes
+            'user_id' // Foreign key yang menghubungkan student_profiles ke users
+        )->whereHas('roles', function($query) {
+            $query->where('name', 'student');
+        });
     }
 
     public function teachers()
     {
-        return $this->belongsToMany(User::class, 'class_teacher', 'class_id', 'teacher_id');
+        return $this->belongsToMany(User::class, 'class_teacher', 'class_id', 'teacher_id')
+                    ->whereHas('roles', function($query) {
+                        $query->where('name', 'teacher');
+                    });
+    }
+
+    public function studentProfiles()
+    {
+        return $this->hasMany(StudentProfile::class, 'school_class_id');
     }
 
     public function subjects()

@@ -20,6 +20,15 @@ return new class extends Migration
         $table->timestamps();
         $table->softDeletes();
     });
+
+    Schema::create('class_teacher', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('class_id')->constrained('school_classes')->onDelete('cascade');
+        $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
+        $table->timestamps();
+
+        $table->unique(['class_id', 'teacher_id']);
+    });
 }
 
     /**
@@ -28,5 +37,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('school_classes');
+        Schema::dropIfExists('class_teacher');
     }
 };

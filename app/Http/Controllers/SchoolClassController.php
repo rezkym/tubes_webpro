@@ -10,7 +10,18 @@ class SchoolClassController extends Controller
 {
     public function index()
     {
-        $classes = SchoolClass::withCount(['students', 'teachers'])
+        $classes = SchoolClass::withCount([
+            'studentProfiles as students_count' => function ($query) {
+                $query->whereHas('user.roles', function ($q) {
+                    $q->where('name', 'student');
+                });
+            },
+            'teachers as teachers_count' => function ($query) {
+                $query->whereHas('roles', function ($q) {
+                    $q->where('name', 'teacher');
+                });
+            }
+        ])
             ->latest()
             ->paginate(10);
 
