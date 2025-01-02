@@ -77,16 +77,25 @@
                         <a href="{{ route('users.index') }}" class="sidebar-link">
                             <i class="fas fa-users me-2"></i> Users
                         </a>
+
+                        <a href="{{ route('attendance-templates.index') }}"
+                            class="sidebar-link {{ request()->routeIs('attendance-templates.*') ? 'active' : '' }}">
+                            <i class="fas fa-clock me-2"></i> Class Schedule
+                        </a>
                     @endrole
 
                     @role('teacher')
-                        
                         <a href="#" class="sidebar-link">
                             <i class="fas fa-calendar-check me-2"></i> Attendance
                         </a>
 
                         <a href="#" class="sidebar-link">
                             <i class="fas fa-clipboard-list me-2"></i> My Classes
+                        </a>
+
+                        <a href="{{ route('attendance-templates.index') }}"
+                            class="sidebar-link {{ request()->routeIs('attendance-templates.*') ? 'active' : '' }}">
+                            <i class="fas fa-clock me-2"></i> My Schedule
                         </a>
                     @endrole
 
@@ -114,12 +123,12 @@
                         </a>
                     @endcan
 
-                    {{-- @can('viewAny', App\Models\Attendance::class)
-                        <a href="{{ route('attendance.index') }}" 
+                    @can('viewAny', App\Models\Attendance::class)
+                        <a href="{{ route('attendance.index') }}"
                             class="sidebar-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
                             <i class="fas fa-calendar-check me-2"></i> Attendance
                         </a>
-                    @endcan --}}
+                    @endcan
 
                 </nav>
             </div>
@@ -178,7 +187,7 @@
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
     @stack('scripts')
 </body>
 

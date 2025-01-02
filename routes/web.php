@@ -9,6 +9,7 @@ use App\Http\Controllers\TeacherProfileController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AttendanceTemplateController;
 
 
 Route::get('/', function () {
@@ -46,6 +47,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::prefix('student')->middleware('role:student')->group(function () {
         Route::get('/', [AdminHomeController::class, 'index'])->name('student.home');
     });
+
+    Route::resource('attendance-templates', AttendanceTemplateController::class);
 
     
 

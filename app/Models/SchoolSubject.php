@@ -34,9 +34,9 @@ class SchoolSubject extends Model
             ->withPivot('teacher_profile_id');
     }
 
-    // public function attendanceTemplates()
-    // {
-    //     return $this->hasMany(AttendanceTemplate::class, 'subject_id');
-    // }
+    public function attendanceTemplates()
+    {
+        return $this->hasMany(AttendanceTemplate::class, 'subject_id');
+    }
 
 }
