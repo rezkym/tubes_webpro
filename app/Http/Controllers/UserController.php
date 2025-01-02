@@ -123,7 +123,7 @@ class UserController extends Controller
         }
 
         if ($request->role === 'student') {
-            $user->studentProfile()->updateOrCreate(
+            $user->studentProfile()->update(
                 ['user_id' => $user->id],
                 [
                     'school_class_id' => $request->class_id,
@@ -138,7 +138,7 @@ class UserController extends Controller
                 ]
             );
         } else {
-            $user->teacherProfile()->updateOrCreate(
+            $user->teacherProfile()->update(
                 ['user_id' => $user->id],
                 [
                     'employee_number' => $request->employee_number,
