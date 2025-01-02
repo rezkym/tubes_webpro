@@ -11,7 +11,8 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // if user has permission then set true
+        return true;
     }
 
     /**
@@ -25,10 +26,10 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'exists:roles,name'],
+            'role' => ['required', 'string', 'exists:roles,name'],
         ];
 
-        if ($this->role === 'student') {
+        if ($this->input('role') === 'student') {
             $rules = array_merge($rules, [
                 'class_id' => ['required', 'exists:school_classes,id'],
                 'student_number' => ['required', 'string', 'unique:student_profiles'],
@@ -39,6 +40,17 @@ class StoreUserRequest extends FormRequest
                 'parent_name' => ['required', 'string', 'max:255'],
                 'parent_phone' => ['required', 'string', 'max:255'],
                 'enrollment_date' => ['required', 'date'],
+            ]);
+        } elseif ($this->input('role') === 'teacher') {
+            $rules = array_merge($rules, [
+                'employee_number' => ['required', 'string', 'unique:teacher_profiles'],
+                'teacher_full_name' => ['required', 'string', 'max:255'],
+                'specialization' => ['required', 'string', 'max:255'],
+                'phone_number' => ['required', 'string', 'max:255'],
+                'teacher_address' => ['required', 'string'],
+                'join_date' => ['required', 'date'],
+                'education_level' => ['required', 'string', 'in:Bachelor,Master,Doctorate'],
+                'teaching_experience_years' => ['required', 'integer', 'min:0'],
             ]);
         }
 

@@ -44,6 +44,9 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
         }
     </style>
+
+    <!-- ... other head elements ... -->
+    @stack('styles')
 </head>
 
 <body>
@@ -57,7 +60,7 @@
 
                 <nav class="mt-2">
                     @role('admin')
-                        <a href="{{ route('dashboard') }}"
+                        <a href="{{ route('admin.home') }}"
                             class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                             <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                         </a>
@@ -77,6 +80,7 @@
                     @endrole
 
                     @role('teacher')
+                        
                         <a href="#" class="sidebar-link">
                             <i class="fas fa-calendar-check me-2"></i> Attendance
                         </a>
@@ -172,8 +176,10 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Custome Script -->
-    @yield('scripts')
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    @stack('scripts')
 </body>
 
 </html>

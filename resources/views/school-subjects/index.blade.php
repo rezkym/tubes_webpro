@@ -30,7 +30,7 @@
                     <tr>
                         <th>Code</th>
                         <th>Name</th>
-                        <th>Teacher</th>
+                        <th>Teachers</th>
                         <th>Classes</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -41,11 +41,19 @@
                         <tr>
                             <td>{{ $subject->code }}</td>
                             <td>{{ $subject->name }}</td>
-                            <td>{{ $subject->teacher->name }}</td>
                             <td>
-                                @foreach($subject->classes as $class)
+                                @forelse($subject->teachers as $teacher)
+                                    <span class="badge bg-primary">{{ $teacher->full_name }}</span>
+                                @empty
+                                    <span class="text-muted">No teacher assigned</span>
+                                @endforelse
+                            </td>
+                            <td>
+                                @forelse($subject->classes as $class)
                                     <span class="badge bg-info">{{ $class->name }}</span>
-                                @endforeach
+                                @empty
+                                    <span class="text-muted">No classes assigned</span>
+                                @endforelse
                             </td>
                             <td>
                                 <span class="badge bg-{{ $subject->is_active ? 'success' : 'danger' }}">
@@ -85,5 +93,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

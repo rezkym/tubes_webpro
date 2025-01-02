@@ -12,7 +12,8 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // if user has permission then set true
+        return $this->user()->can('manage users', $this->user);
     }
 
     /**

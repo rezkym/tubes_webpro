@@ -7,13 +7,14 @@ use App\Models\SchoolSubject;
 use App\Models\SchoolClass;
 use App\Http\Requests\StoreSchoolSubjectRequest;
 use App\Http\Requests\UpdateSchoolSubjectRequest;
+use App\Models\TeacherProfile;
 
 class SchoolSubjectController extends Controller
 {
 
     public function index()
     {
-        $subjects = SchoolSubject::with(['teacher', 'classes'])
+        $subjects = SchoolSubject::with(['teachers', 'classes'])
             ->latest()
             ->paginate(10);
 
@@ -33,11 +34,15 @@ class SchoolSubjectController extends Controller
         $subject = SchoolSubject::create($request->validated());
 
         if ($request->has('classes')) {
-            $subject->classes()->attach($request->classes);
+            // Attach classes dengan teacher_profile_id
+            $attachData = collect($request->classes)->mapWithKeys(function ($classId) use ($request) {
+                return [$classId => ['teacher_profile_id' => TeacherProfile::where('user_id', $request->teacher_id)->first()->id]];
+            })->all();
+
+            $subject->classes()->attach($attachData);
         }
 
-        return redirect()
-            ->route('school-subjects.index')
+        return redirect()->route('school-subjects.index')
             ->with('success', 'Subject created successfully.');
     }
 
@@ -65,9 +70,9 @@ class SchoolSubjectController extends Controller
 
     public function destroy(SchoolSubject $schoolSubject)
     {
-        if ($schoolSubject->attendanceTemplates()->exists()) {
-            return back()->with('error', 'Cannot delete subject with existing attendance records.');
-        }
+        // if ($schoolSubject->attendanceTemplates()->exists()) {
+        //     return back()->with('error', 'Cannot delete subject with existing attendance records.');
+        // }
 
         $schoolSubject->classes()->detach();
         $schoolSubject->delete();

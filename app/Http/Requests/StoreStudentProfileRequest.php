@@ -23,7 +23,8 @@ class StoreStudentProfileRequest extends FormRequest
             'address' => ['required', 'string'],
             'parent_name' => ['required', 'string', 'max:255'],
             'parent_phone' => ['required', 'string', 'max:20'],
-            'enrollment_date' => ['required', 'date']
+            'enrollment_date' => ['required', 'date'],
+            'student_number' => ['required', 'string', 'exists:student_profiles,student_number'],
         ];
     }
 }

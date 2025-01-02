@@ -25,6 +25,14 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('class_subject', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('class_id')->constrained('school_classes')->onDelete('cascade');
+            $table->foreignId('subject_id')->constrained('school_subjects')->onDelete('cascade');
+            $table->foreignId('teacher_profile_id')->constrained('teacher_profiles')->onDelete('cascade');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -32,6 +40,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('class_subject');
         Schema::dropIfExists('teacher_profiles');
     }
 };

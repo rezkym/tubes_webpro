@@ -23,14 +23,15 @@ class SchoolSubject extends Model
         'is_active' => 'boolean'
     ];
 
-    public function teacher()
+    public function teachers()
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsToMany(TeacherProfile::class, 'class_subject', 'subject_id', 'teacher_profile_id');
     }
 
     public function classes()
     {
-        return $this->belongsToMany(SchoolClass::class, 'class_subject', 'school_subject_id', 'school_class_id');
+        return $this->belongsToMany(SchoolClass::class, 'class_subject', 'subject_id', 'class_id')
+            ->withPivot('teacher_profile_id');
     }
 
     // public function attendanceTemplates()

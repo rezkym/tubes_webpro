@@ -14,13 +14,17 @@ class TeacherProfileController extends Controller
     use AuthorizesRequests;
 
     public function index()
-    {
-        $this->authorize('viewAny', TeacherProfile::class);
+{
+    $this->authorize('viewAny', TeacherProfile::class);
+    
+    $teachers = TeacherProfile::with(['user', 'subjects', 'classes'])
+        ->when(auth()->user()->hasRole('teacher'), function ($query) {
+            return $query->where('id', auth()->user()->teacherProfile->id);
+        })
+        ->paginate(15);
         
-        $teachers = TeacherProfile::with(['user', 'subjects', 'classes'])
-            ->paginate(15);
-        return view('teachers.index', compact('teachers'));
-    }
+    return view('teachers.index', compact('teachers'));
+}
 
     public function create()
     {

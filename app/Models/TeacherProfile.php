@@ -34,12 +34,11 @@ class TeacherProfile extends Model
 
     public function subjects()
     {
-        return $this->hasMany(SchoolSubject::class, 'teacher_id');
+        return $this->belongsToMany(SchoolSubject::class, 'class_subject', 'teacher_profile_id', 'subject_id');
     }
 
     public function classes()
     {
-        return $this->belongsToMany(SchoolClass::class, 'class_subject', 'teacher_id', 'class_id')
-                    ->distinct();
+        return $this->belongsToMany(SchoolClass::class, 'class_subject', 'teacher_profile_id', 'class_id');
     }
 }
