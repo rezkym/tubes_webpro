@@ -67,7 +67,7 @@
                             <i class="fas fa-chalkboard me-2"></i> Classes
                         </a>
 
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ route('school-subjects.index') }}" class="sidebar-link">
                             <i class="fas fa-book me-2"></i> Subjects
                         </a>
 
@@ -97,10 +97,19 @@
                     @endrole
 
                     @canany(['viewAny', 'create'], App\Models\StudentProfile::class)
-                        <a href="{{ route('students.index') }}" class="sidebar-link {{ request()->routeIs('students.*') ? 'active' : '' }}">
+                        <a href="{{ route('students.index') }}"
+                            class="sidebar-link {{ request()->routeIs('students.*') ? 'active' : '' }}">
                             <i class="fas fa-user-graduate me-2"></i> Student Management
                         </a>
                     @endcanany
+
+                    @can('viewAny', App\Models\TeacherProfile::class)
+                        <a href="{{ route('teachers.index') }}"
+                            class="sidebar-link {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+                            <i class="fas fa-chalkboard-teacher me-2"></i> Teacher Management
+                        </a>
+                    @endcan
+
                 </nav>
             </div>
 
@@ -155,6 +164,9 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custome Script -->
+    @yield('scripts')
 </body>
 
 </html>
