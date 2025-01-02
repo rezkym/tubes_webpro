@@ -71,7 +71,7 @@
                             <i class="fas fa-book me-2"></i> Subjects
                         </a>
 
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ route('users.index') }}" class="sidebar-link">
                             <i class="fas fa-users me-2"></i> Users
                         </a>
                     @endrole

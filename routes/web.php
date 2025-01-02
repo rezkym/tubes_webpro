@@ -6,6 +6,7 @@ use App\Http\Controllers\SchoolSubjectController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\TeacherProfileController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\UserController;
 
 Route::get('/home', function () {
     return view('welcome');
@@ -18,6 +19,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('school-subjects', SchoolSubjectController::class)->middleware('permission:manage subjects');
     Route::resource('students', StudentProfileController::class)->middleware('role:admin|teacher');
     Route::resource('teachers', TeacherProfileController::class);
+    Route::resource('users', UserController::class);
+
     
     // create dashboard route
     Route::get('/dashboard', function () {
