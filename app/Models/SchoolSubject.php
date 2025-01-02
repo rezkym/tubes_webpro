@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SchoolSubject extends Model
 {
@@ -32,9 +33,9 @@ class SchoolSubject extends Model
         return $this->belongsToMany(SchoolClass::class, 'class_subject', 'school_subject_id', 'school_class_id');
     }
 
-    public function attendanceTemplates()
-    {
-        return $this->hasMany(AttendanceTemplate::class, 'subject_id');
-    }
+    // public function attendanceTemplates()
+    // {
+    //     return $this->hasMany(AttendanceTemplate::class, 'subject_id');
+    // }
 
 }
