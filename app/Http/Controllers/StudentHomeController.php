@@ -17,8 +17,6 @@ class StudentHomeController extends Controller
         // Get current day
         $currentDay = strtolower(Carbon::now()->format('l'));
 
-        // Debugging: Log the current day
-
         // Get today's schedule
         $todaySchedule = AttendanceTemplate::with(['subject', 'teacher'])
             ->whereHas('schoolClass', function($query) use ($student) {
