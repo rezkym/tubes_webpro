@@ -103,6 +103,16 @@ class AttendanceController extends Controller
         return view('attendance.create', compact('classes', 'subjects'));
     }
 
+    /**
+     * Retrieve students for attendance.
+     *
+     * This method fetches students from a specific class ordered by their full name.
+     * Requires authorization to take attendance for the given class and subject.
+     * 
+     * @param \Illuminate\Http\Request $request Contains class_id and subject_id
+     * @return \Illuminate\Http\JsonResponse JSON response containing students data
+     * @throws \Illuminate\Auth\Access\AuthorizationException If user is not authorized
+     */
     public function getStudents(Request $request)
     {
         $this->authorize('takeAttendance', [Attendance::class, $request->class_id, $request->subject_id]);
