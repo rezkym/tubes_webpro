@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\SchoolClass;
 use App\Http\Requests\StoreSchoolClassRequest;
 use App\Http\Requests\UpdateSchoolClassRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SchoolClassController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the school classes.
      *
@@ -15,6 +17,8 @@ class SchoolClassController extends Controller
      */
     public function index()
     {
+        $this->authorize('manage classes');
+
         $classes = SchoolClass::withCount([
             'studentProfiles as students_count' => function ($query) {
                 $query->whereHas('user.roles', function ($q) {
@@ -40,6 +44,8 @@ class SchoolClassController extends Controller
      */
     public function create()
     {
+        $this->authorize('manage classes');
+
         return view('school-classes.create');
     }
 
@@ -51,6 +57,8 @@ class SchoolClassController extends Controller
      */
     public function store(StoreSchoolClassRequest $request)
     {
+        $this->authorize('manage classes');
+
         SchoolClass::create($request->validated());
 
         return redirect()
@@ -66,6 +74,8 @@ class SchoolClassController extends Controller
      */
     public function edit(SchoolClass $schoolClass)
     {
+        $this->authorize('manage classes');
+
         return view('school-classes.edit', compact('schoolClass'));
     }
 
@@ -78,6 +88,8 @@ class SchoolClassController extends Controller
      */
     public function update(UpdateSchoolClassRequest $request, SchoolClass $schoolClass)
     {
+        $this->authorize('manage classes');
+
         $data = $request->validated();
 
         if ($request->has('is_active') && !$request->is_active) {
@@ -86,7 +98,7 @@ class SchoolClassController extends Controller
             }
         }
 
-        $data['is_active'] = $request->has('is_active') ? 1 : 0;
+        $data['is_active'] = $request->boolean('is_active');
 
         $schoolClass->update($data);
 
@@ -103,6 +115,8 @@ class SchoolClassController extends Controller
      */
     public function destroy(SchoolClass $schoolClass)
     {
+        $this->authorize('manage classes');
+        
         if ($schoolClass->students()->exists()) {
             return back()->with('error', 'Cannot delete class with active students.');
         }

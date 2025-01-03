@@ -31,7 +31,7 @@ class UpdateSchoolClassRequest extends FormRequest
                 Rule::unique('school_classes')->ignore($this->route('school_class')->id)
             ],
             'description' => ['nullable', 'string'],
-            'is_active' => ['boolean', 'in:1,0'],
+            'is_active' => ['required', 'boolean'],
         ];
     }
 }
