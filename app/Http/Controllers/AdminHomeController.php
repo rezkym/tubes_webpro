@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class AdminHomeController extends Controller
 {
+    /**
+     * Display the admin dashboard with various statistics and data.
+     *
+     * @return \Illuminate\View\View Returns view with statistics, attendance data and recent activities
+     */
     public function index()
     {
         // Statistik Utama
@@ -31,6 +36,17 @@ class AdminHomeController extends Controller
         ));
     }
 
+    /**
+     * Get main statistical data for the dashboard.
+     * 
+     * Retrieves:
+     * - Total number of students
+     * - Total number of teachers 
+     * - Total number of classes
+     * - List of 5 most recent students with their details
+     *
+     * @return array Array containing main statistical data
+     */
     private function getMainStatistics()
     {
         return [
@@ -44,6 +60,19 @@ class AdminHomeController extends Controller
         ];
     }
 
+    /**
+     * Get attendance data for dashboard visualization.
+     * 
+     * Retrieves:
+     * - Daily attendance statistics for the last 30 days
+     * - Today's attendance statistics grouped by class
+     * 
+     * Each attendance record includes:
+     * - Total attendance count
+     * - Count of present students
+     *
+     * @return array Array containing daily and class-wise attendance data
+     */
     private function getAttendanceData()
     {
         $thirtyDaysAgo = Carbon::now()->subDays(30);
@@ -77,6 +106,20 @@ class AdminHomeController extends Controller
         ];
     }
 
+    /**
+     * Get recent activity logs for the dashboard.
+     * 
+     * Combines and returns the 10 most recent activities from:
+     * - New user registrations with their roles
+     * - Student attendance records
+     * 
+     * Each activity includes:
+     * - Activity type
+     * - Description
+     * - Timestamp
+     *
+     * @return array Array of sorted recent activities
+     */
     private function getRecentActivities()
     {
         // Get recent activities from multiple sources
