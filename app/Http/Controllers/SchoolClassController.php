@@ -78,7 +78,17 @@ class SchoolClassController extends Controller
      */
     public function update(UpdateSchoolClassRequest $request, SchoolClass $schoolClass)
     {
-        $schoolClass->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->has('is_active') && !$request->is_active) {
+            if ($schoolClass->students()->exists() || $schoolClass->teachers()->exists()) {
+                return back()->with('error', 'Cannot deactivate class with active students or teachers.');
+            }
+        }
+
+        $data['is_active'] = $request->has('is_active') ? 1 : 0;
+
+        $schoolClass->update($data);
 
         return redirect()
             ->route('school-classes.index')
