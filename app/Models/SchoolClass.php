@@ -38,9 +38,11 @@ class SchoolClass extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany(User::class, 'class_teacher', 'class_id', 'teacher_id')
-                    ->whereHas('roles', function($query) {
-                        $query->where('name', 'teacher');
+        return $this->belongsToMany(TeacherProfile::class, 'class_teacher', 'class_id', 'teacher_id')
+                    ->whereHas('user', function($query) {
+                        $query->whereHas('roles', function($q) {
+                            $q->where('name', 'teacher');
+                        });
                     });
     }
 

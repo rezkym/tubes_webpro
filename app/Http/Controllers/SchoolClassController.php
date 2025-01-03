@@ -26,11 +26,12 @@ class SchoolClassController extends Controller
                 });
             },
             'teachers as teachers_count' => function ($query) {
-                $query->whereHas('roles', function ($q) {
+                $query->whereHas('user.roles', function ($q) {
                     $q->where('name', 'teacher');
                 });
             }
         ])
+            ->with(['teachers.user']) // eager load user relation
             ->latest()
             ->paginate(10);
 
@@ -116,7 +117,7 @@ class SchoolClassController extends Controller
     public function destroy(SchoolClass $schoolClass)
     {
         $this->authorize('manage classes');
-        
+
         if ($schoolClass->students()->exists()) {
             return back()->with('error', 'Cannot delete class with active students.');
         }
@@ -126,5 +127,11 @@ class SchoolClassController extends Controller
         return redirect()
             ->route('school-classes.index')
             ->with('success', 'Class deleted successfully.');
+    }
+
+    public function getTeachers(SchoolClass $class)
+    {
+        $teachers = $class->teachers;
+        return response()->json($teachers);
     }
 }
