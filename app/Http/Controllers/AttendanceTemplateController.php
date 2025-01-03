@@ -16,6 +16,8 @@ class AttendanceTemplateController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', AttendanceTemplate::class);
+        
         $query = AttendanceTemplate::with(['schoolClass', 'subject', 'teacher']);
 
         // If teacher, only show their templates
@@ -29,6 +31,8 @@ class AttendanceTemplateController extends Controller
 
     public function create()
     {
+        $this->authorize('manage attendance');
+
         $classes = SchoolClass::where('is_active', true)->get();
         $subjects = SchoolSubject::where('is_active', true)->get();
         $days = AttendanceTemplate::getDays();
@@ -38,7 +42,7 @@ class AttendanceTemplateController extends Controller
 
     public function store(StoreAttendanceTemplateRequest $request)
     {
-
+        $this->authorize('manage attendance');
 
         $user = Auth::user();
         $data = $request->validated();
@@ -74,7 +78,7 @@ class AttendanceTemplateController extends Controller
 
     public function edit(AttendanceTemplate $attendance_template)  // Changed from $template
     {
-        $this->authorize('update', $attendance_template);
+        $this->authorize('manage attendance', $attendance_template);
 
         $classes = SchoolClass::where('is_active', true)->get();
         $subjects = SchoolSubject::where('is_active', true)->get();

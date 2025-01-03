@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code')->unique();
             $table->text('description')->nullable();
-            $table->foreignId('teacher_id')->nullable()->constrained('teacher_profiles')->onDelete('set null');
+            $table->foreignId('teacher_id')->nullable()->constrained('users')->onDelete('set null');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

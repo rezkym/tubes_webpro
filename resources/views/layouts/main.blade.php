@@ -85,12 +85,6 @@
                         <a href="{{ route('student.home') }}" class="sidebar-link {{ request()->routeIs('student.home') ? 'active' : '' }}">
                             <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                         </a>
-                        {{-- <a href="{{ route('attendance.index') }}" class="sidebar-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
-                            <i class="fas fa-calendar me-2"></i> My Attendance
-                        </a> --}}
-                        <a href="{{ route('attendance-templates.index') }}" class="sidebar-link {{ request()->routeIs('attendance-templates.*') ? 'active' : '' }}">
-                            <i class="fas fa-book-reader me-2"></i> My Schedule
-                        </a>
                     @endrole
                 </nav>
             </div>
@@ -101,6 +95,8 @@
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                             <span class="navbar-toggler-icon"></span>
                         </button>
+
+                        {{ now()->format('l, F j, Y: H:i:s') }}
 
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav ms-auto">
