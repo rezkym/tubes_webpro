@@ -26,7 +26,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th>Student Info</th>
+                            <th>Info</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -37,15 +37,31 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     @foreach($user->roles as $role)
-                                        <span class="badge bg-info">{{ $role->name }}</span>
+                                        @if($role->name == 'admin')
+                                            <span class="badge bg-success">{{ $role->name }}</span>
+                                        @elseif($role->name == 'teacher')
+                                            <span class="badge bg-primary">{{ $role->name }}</span>
+                                        @elseif($role->name == 'student')
+                                            <span class="badge bg-warning">{{ $role->name }}</span>
+                                        @else
+                                            <span class="badge bg-info">{{ $role->name }}</span>
+                                        @endif
                                     @endforeach
                                 </td>
                                 <td>
-                                    @if($user->studentProfile)
+                                    @if($user->hasRole('student') && $user->studentProfile)
                                         <small>
                                             ID: {{ $user->studentProfile->student_number }}<br>
                                             Class: {{ $user->studentProfile->schoolClass->name }}
                                         </small>
+                                    @elseif($user->hasRole('teacher') && $user->teacherProfile)
+                                        <small>
+                                            Employee Number: {{ $user->teacherProfile->employee_number }}<br>
+                                            Specialization: {{ $user->teacherProfile->specialization }} <br>
+                                            Teach Class: {{ $user->teacherProfile->classes->pluck('name')->implode(', ') }}
+                                        </small>
+                                    @else
+                                        No Display
                                     @endif
                                 </td>
                                 <td>
@@ -63,15 +79,12 @@
                                             </a>
                                         @endcan
                                         @can('delete', $user)
-                                            <form action="{{ route('users.destroy', $user) }}" 
-                                                  method="POST" 
-                                                  onsubmit="return confirm('Are you sure you want to delete this user?');"
-                                                  class="d-inline">
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $user->id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user) }}" method="POST" class="d-none">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
                                             </form>
                                         @endcan
                                     </div>
@@ -92,4 +105,23 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(userId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + userId).submit();
+            }
+        })
+    }
+</script>
 @endsection

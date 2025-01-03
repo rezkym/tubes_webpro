@@ -6,7 +6,9 @@
         <div class="card-header">
             <h5 class="mb-0">Edit User</h5>
         </div>
+        
         <div class="card-body">
+            @include('partials.alerts')
             <form action="{{ route('users.update', $user) }}" method="POST">
                 @csrf
                 @method('PUT')

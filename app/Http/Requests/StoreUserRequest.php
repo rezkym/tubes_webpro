@@ -12,7 +12,7 @@ class StoreUserRequest extends FormRequest
     public function authorize(): bool
     {
         // if user has permission then set true
-        return true;
+        return $this->user()->can('manage users');
     }
 
     /**
@@ -23,7 +23,7 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
+            'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'string', 'exists:roles,name'],
@@ -33,7 +33,6 @@ class StoreUserRequest extends FormRequest
             $rules = array_merge($rules, [
                 'class_id' => ['required', 'exists:school_classes,id'],
                 'student_number' => ['required', 'string', 'unique:student_profiles'],
-                'full_name' => ['required', 'string', 'max:255'],
                 'date_of_birth' => ['required', 'date'],
                 'gender' => ['required', 'in:male,female'],
                 'address' => ['required', 'string'],
@@ -44,13 +43,14 @@ class StoreUserRequest extends FormRequest
         } elseif ($this->input('role') === 'teacher') {
             $rules = array_merge($rules, [
                 'employee_number' => ['required', 'string', 'unique:teacher_profiles'],
-                'teacher_full_name' => ['required', 'string', 'max:255'],
                 'specialization' => ['required', 'string', 'max:255'],
                 'phone_number' => ['required', 'string', 'max:255'],
                 'teacher_address' => ['required', 'string'],
                 'join_date' => ['required', 'date'],
                 'education_level' => ['required', 'string', 'in:Bachelor,Master,Doctorate'],
                 'teaching_experience_years' => ['required', 'integer', 'min:0'],
+                'assigned_classes' => ['required', 'array', 'min:1'],
+                'assigned_classes.*' => ['exists:school_classes,id']
             ]);
         }
 
