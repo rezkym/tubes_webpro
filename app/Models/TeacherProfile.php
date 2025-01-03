@@ -39,6 +39,6 @@ class TeacherProfile extends Model
 
     public function classes()
     {
-        return $this->belongsToMany(SchoolClass::class, 'class_subject', 'teacher_profile_id', 'class_id');
+        return $this->belongsToMany(SchoolClass::class, 'class_teacher', 'teacher_id', 'class_id');
     }
 }

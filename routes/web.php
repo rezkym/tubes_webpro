@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceTemplateController;
 use App\Http\Controllers\StudentHomeController;
 use App\Http\Controllers\TeacherHomeController;
+use App\Models\SchoolClass;
+use App\Models\User;
 
 
 Route::get('/', function () {
@@ -45,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('school-subjects', SchoolSubjectController::class);
         Route::resource('teachers', TeacherProfileController::class);
         Route::resource('users', UserController::class);
+        Route::post('teachers/{teacher}/assign-classes', [TeacherProfileController::class, 'assignClasses'])->name('teachers.assign-classes');
     });
 
     Route::prefix('teacher')->middleware('role:teacher')->group(function () {
@@ -56,4 +59,16 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::resource('attendance-templates', AttendanceTemplateController::class);
+});
+
+Route::get('/test', function () {
+    // get teacher class
+    $teacher = User::find(4)->teacherProfile;
+    
+    $class = SchoolClass::all();
+
+    foreach ($class as $c) {
+        print($teacher->classes);
+    }
+
 });

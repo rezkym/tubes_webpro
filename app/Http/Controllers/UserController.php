@@ -55,7 +55,7 @@ class UserController extends Controller
         DB::beginTransaction();
         try {
             $user = User::create([
-                'name' => $request->name,
+                'name' => $request->full_name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
@@ -76,10 +76,10 @@ class UserController extends Controller
                     'enrollment_date' => $request->enrollment_date,
                 ]);
             } elseif ($request->role === 'teacher') {
-                TeacherProfile::create([
+                $teacherProfile = TeacherProfile::create([
                     'user_id' => $user->id,
                     'employee_number' => $request->employee_number,
-                    'full_name' => $request->teacher_full_name,
+                    'full_name' => $request->full_name,
                     'specialization' => $request->specialization,
                     'phone_number' => $request->phone_number,
                     'address' => $request->teacher_address,
@@ -87,6 +87,17 @@ class UserController extends Controller
                     'education_level' => $request->education_level,
                     'teaching_experience_years' => $request->teaching_experience_years,
                 ]);
+
+                if ($request->has('assigned_classes')) {
+                    foreach ($request->assigned_classes as $classId) {
+                        DB::table('class_teacher')->insert([
+                            'class_id' => $classId,
+                            'teacher_id' => $teacherProfile->id, // Menggunakan ID dari teacher_profile
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
+                }
             }
 
             DB::commit();
@@ -94,6 +105,7 @@ class UserController extends Controller
                 ->with('success', 'User created successfully');
         } catch (\Exception $e) {
             DB::rollback();
+            dd($e);
             return back()->with('error', 'Failed to create user. ' . $e->getMessage())
                 ->withInput();
         }
@@ -110,7 +122,7 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         $user->update([
-            'name' => $request->name,
+            'name' => $request->full_name,
             'email' => $request->email,
         ]);
 
@@ -123,34 +135,45 @@ class UserController extends Controller
         }
 
         if ($request->role === 'student') {
-            $user->studentProfile()->update(
-                ['user_id' => $user->id],
-                [
-                    'school_class_id' => $request->class_id,
-                    'student_number' => $request->student_number,
-                    'full_name' => $request->full_name,
-                    'date_of_birth' => $request->date_of_birth,
-                    'gender' => $request->gender,
-                    'address' => $request->address,
-                    'parent_name' => $request->parent_name,
-                    'parent_phone' => $request->parent_phone,
-                    'enrollment_date' => $request->enrollment_date,
-                ]
-            );
-        } else {
-            $user->teacherProfile()->update(
-                ['user_id' => $user->id],
-                [
-                    'employee_number' => $request->employee_number,
-                    'full_name' => $request->full_name,
-                    'specialization' => $request->specialization,
-                    'phone_number' => $request->phone_number,
-                    'address' => $request->address,
-                    'join_date' => $request->join_date,
-                    'education_level' => $request->education_level,
-                    'teaching_experience_years' => $request->teaching_experience_years,
-                ]
-            );
+            $user->studentProfile()->update([
+                'school_class_id' => $request->class_id,
+                'student_number' => $request->student_number,
+                'full_name' => $request->full_name,
+                'date_of_birth' => $request->date_of_birth,
+                'gender' => $request->gender,
+                'address' => $request->address,
+                'parent_name' => $request->parent_name,
+                'parent_phone' => $request->parent_phone,
+                'enrollment_date' => $request->enrollment_date,
+            ]);
+        } elseif ($request->role === 'teacher') {
+            $teacherProfile = $user->teacherProfile;
+            $teacherProfile->update([
+                'employee_number' => $request->employee_number,
+                'full_name' => $request->full_name,
+                'specialization' => $request->specialization,
+                'phone_number' => $request->phone_number,
+                'address' => $request->teacher_address,
+                'join_date' => $request->join_date,
+                'education_level' => $request->education_level,
+                'teaching_experience_years' => $request->teaching_experience_years,
+            ]);
+    
+            // Update assigned classes menggunakan teacher_profile id
+            if ($request->has('assigned_classes')) {
+                DB::table('class_teacher')
+                    ->where('teacher_id', $teacherProfile->id)
+                    ->delete();
+                    
+                foreach ($request->assigned_classes as $classId) {
+                    DB::table('class_teacher')->insert([
+                        'class_id' => $classId,
+                        'teacher_id' => $teacherProfile->id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+            }
         }
 
         return redirect()

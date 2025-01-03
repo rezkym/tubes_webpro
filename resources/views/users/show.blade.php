@@ -83,6 +83,54 @@
                     </table>
                 </div>
                 @endif
+
+                @if($user->hasRole('teacher') && $user->teacherProfile)
+                <div class="col-md-6">
+                    <h6 class="border-bottom pb-2">Teacher Information</h6>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="150">Employee Number</th>
+                            <td>{{ $user->teacherProfile->employee_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Full Name</th>
+                            <td>{{ $user->teacherProfile->full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Specialization</th>
+                            <td>{{ $user->teacherProfile->specialization }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone Number</th>
+                            <td>{{ $user->teacherProfile->phone_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address</th>
+                            <td>{{ $user->teacherProfile->address }}</td>
+                        </tr>
+                        <tr>
+                            <th>Join Date</th>
+                            <td>{{ $user->teacherProfile->join_date->format('d F Y') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Education Level</th>
+                            <td>{{ $user->teacherProfile->education_level }}</td>
+                        </tr>
+                        <tr>
+                            <th>Teaching Experience (Years)</th>
+                            <td>{{ $user->teacherProfile->teaching_experience_years }}</td>
+                        </tr>
+                        <tr>
+                            <th>Assigned Classes</th>
+                            <td>
+                                @foreach($user->teacherProfile->classes as $class)
+                                    <span class="badge bg-secondary">{{ $class->name }}</span>
+                                @endforeach
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                @endif
             </div>
         </div>
     </div>
