@@ -124,6 +124,22 @@ class AttendanceController extends Controller
         return response()->json($students);
     }
 
+    /**
+     * Store new attendance records for multiple students.
+     *
+     * This method processes attendance data for multiple students in a single transaction.
+     * It authorizes the user, creates attendance records for each student, and handles
+     * any errors during the process.
+     *
+     * @param \App\Http\Requests\StoreAttendanceRequest $request The validated request containing:
+     *        - attendances: array of student attendance data (status and optional remarks)
+     *        - class_id: the school class ID
+     *        - subject_id: the school subject ID  
+     *        - date: the attendance date
+     * 
+     * @throws \Illuminate\Auth\Access\AuthorizationException If user is not authorized
+     * @return \Illuminate\Http\RedirectResponse Redirects back with success/error message
+     */
     public function store(StoreAttendanceRequest $request)
     {
         $this->authorize('takeAttendance', [Attendance::class, $request->class_id, $request->subject_id]);
