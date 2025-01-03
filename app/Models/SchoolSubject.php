@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SchoolSubject extends Model
 {
-    /** @use HasFactory<\Database\Factories\SchoolSubjectFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -25,21 +24,18 @@ class SchoolSubject extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany(User::class, 'class_subject', 'subject_id', 'teacher_profile_id')
-        ->whereHas('roles', function($q) {
-            $q->where('name', 'teacher');
-        });
+        return $this->belongsToMany(TeacherProfile::class, 'class_subject', 'subject_id', 'teacher_profile_id')
+                    ->distinct();
     }
 
     public function classes()
     {
         return $this->belongsToMany(SchoolClass::class, 'class_subject', 'subject_id', 'class_id')
-            ->withPivot('teacher_profile_id');
+                    ->withPivot('teacher_profile_id');
     }
 
     public function attendanceTemplates()
     {
         return $this->hasMany(AttendanceTemplate::class, 'school_subject_id');
     }
-
 }
