@@ -59,6 +59,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::resource('attendance-templates', AttendanceTemplateController::class);
+
+    Route::get('school-classes/{class}/teachers', [SchoolClassController::class, 'getTeachers'])
+        ->name('school-classes.teachers');
 });
 
 Route::get('/test', function () {

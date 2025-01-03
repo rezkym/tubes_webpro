@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="container-fluid px-4">
-
         <div class="d-flex justify-content-between align-items-center">
             <h1 class="mt-4">School Classes</h1>
             @can('manage classes', App\Models\SchoolClass::class)
@@ -35,7 +34,14 @@
                                 <td>{{ $class->code }}</td>
                                 <td>{{ $class->name }}</td>
                                 <td>{{ $class->students_count }}</td>
-                                <td>{{ $class->teachers_count }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ $class->teachers_count }} Teachers</span>
+                                    <div class="small mt-1">
+                                        @foreach($class->teachers as $teacherProfile)
+                                            {{ $teacherProfile->user->name }}{{ !$loop->last ? ',' : '' }}
+                                        @endforeach
+                                    </div>
+                                </td>
                                 <td>
                                     <span class="badge bg-{{ $class->is_active ? 'success' : 'danger' }}">
                                         {{ $class->is_active ? 'Active' : 'Inactive' }}
