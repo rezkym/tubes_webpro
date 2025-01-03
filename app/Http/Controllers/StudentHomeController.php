@@ -44,9 +44,6 @@ class StudentHomeController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        // Debugging: Log the retrieved schedule
-        // \Log::info('Today\'s Schedule:', $todaySchedule->toArray());
-
         if ($todaySchedule->isEmpty()) {
             $todaySchedule = collect([['message' => 'Tidak ada jadwal untuk hari ini']]);
         }
