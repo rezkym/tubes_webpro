@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     // Attendance routes
     Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
     Route::resource('students', StudentProfileController::class);
+
+    
     Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('attendance', [AttendanceController::class, 'store'])->name('attendance.store');

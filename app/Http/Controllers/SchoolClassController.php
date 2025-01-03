@@ -8,6 +8,11 @@ use App\Http\Requests\UpdateSchoolClassRequest;
 
 class SchoolClassController extends Controller
 {
+    /**
+     * Display a listing of the school classes.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $classes = SchoolClass::withCount([
@@ -28,11 +33,22 @@ class SchoolClassController extends Controller
         return view('school-classes.index', compact('classes'));
     }
 
+    /**
+     * Show the form for creating a new school class.
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('school-classes.create');
     }
 
+    /**
+     * Store a newly created school class in storage.
+     *
+     * @param  \App\Http\Requests\StoreSchoolClassRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(StoreSchoolClassRequest $request)
     {
         SchoolClass::create($request->validated());
@@ -42,11 +58,24 @@ class SchoolClassController extends Controller
             ->with('success', 'Class created successfully.');
     }
 
+    /**
+     * Show the form for editing the specified school class.
+     *
+     * @param  \App\Models\SchoolClass  $schoolClass
+     * @return \Illuminate\View\View
+     */
     public function edit(SchoolClass $schoolClass)
     {
         return view('school-classes.edit', compact('schoolClass'));
     }
 
+    /**
+     * Update the specified school class in storage.
+     *
+     * @param  \App\Http\Requests\UpdateSchoolClassRequest  $request
+     * @param  \App\Models\SchoolClass  $schoolClass
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(UpdateSchoolClassRequest $request, SchoolClass $schoolClass)
     {
         $schoolClass->update($request->validated());
@@ -56,6 +85,12 @@ class SchoolClassController extends Controller
             ->with('success', 'Class updated successfully.');
     }
 
+    /**
+     * Remove the specified school class from storage.
+     *
+     * @param  \App\Models\SchoolClass  $schoolClass
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(SchoolClass $schoolClass)
     {
         if ($schoolClass->students()->exists()) {
