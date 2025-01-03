@@ -19,6 +19,23 @@ class AttendanceController extends Controller
 {
     use AuthorizesRequests;
 
+    /**
+     * Display a paginated list of attendance records with optional filters.
+     *
+     * This method handles the following functionality:
+     * - Authorizes the user to view attendance records
+     * - Loads related models (student, teacher, subject, class) through eager loading
+     * - Filters records by date range if start_date and end_date are provided
+     * - Filters records by class if class_id is provided
+     * - Filters records by subject if subject_id is provided
+     * - For teachers, restricts view to only their own records
+     * - Paginates results and includes class and subject data for filtering
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function index(Request $request)
     {
         $this->authorize('viewAny', Attendance::class);
