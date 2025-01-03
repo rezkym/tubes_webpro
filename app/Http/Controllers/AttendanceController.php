@@ -19,6 +19,23 @@ class AttendanceController extends Controller
 {
     use AuthorizesRequests;
 
+    /**
+     * Display a paginated list of attendance records with optional filters.
+     *
+     * This method handles the following functionality:
+     * - Authorizes the user to view attendance records
+     * - Loads related models (student, teacher, subject, class) through eager loading
+     * - Filters records by date range if start_date and end_date are provided
+     * - Filters records by class if class_id is provided
+     * - Filters records by subject if subject_id is provided
+     * - For teachers, restricts view to only their own records
+     * - Paginates results and includes class and subject data for filtering
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function index(Request $request)
     {
         $this->authorize('viewAny', Attendance::class);
@@ -55,6 +72,18 @@ class AttendanceController extends Controller
         return view('attendance.index', compact('attendances', 'classes', 'subjects'));
     }
 
+    /**
+     * Show the form for creating a new attendance record.
+     * 
+     * This method performs the following:
+     * - Authorizes the user for attendance creation
+     * - Retrieves the teacher profile if user has teacher role
+     * - Gets classes associated with the teacher or all classes if not a teacher
+     * - Gets subjects taught by the teacher or all subjects if not a teacher
+     * 
+     * @return \Illuminate\View\View Returns the attendance creation view with classes and subjects data
+     * @throws \Illuminate\Auth\Access\AuthorizationException If user is not authorized
+     */
     public function create()
     {
         $this->authorize('create', Attendance::class);
@@ -74,6 +103,16 @@ class AttendanceController extends Controller
         return view('attendance.create', compact('classes', 'subjects'));
     }
 
+    /**
+     * Retrieve students for attendance.
+     *
+     * This method fetches students from a specific class ordered by their full name.
+     * Requires authorization to take attendance for the given class and subject.
+     * 
+     * @param \Illuminate\Http\Request $request Contains class_id and subject_id
+     * @return \Illuminate\Http\JsonResponse JSON response containing students data
+     * @throws \Illuminate\Auth\Access\AuthorizationException If user is not authorized
+     */
     public function getStudents(Request $request)
     {
         $this->authorize('takeAttendance', [Attendance::class, $request->class_id, $request->subject_id]);
@@ -85,6 +124,22 @@ class AttendanceController extends Controller
         return response()->json($students);
     }
 
+    /**
+     * Store new attendance records for multiple students.
+     *
+     * This method processes attendance data for multiple students in a single transaction.
+     * It authorizes the user, creates attendance records for each student, and handles
+     * any errors during the process.
+     *
+     * @param \App\Http\Requests\StoreAttendanceRequest $request The validated request containing:
+     *        - attendances: array of student attendance data (status and optional remarks)
+     *        - class_id: the school class ID
+     *        - subject_id: the school subject ID  
+     *        - date: the attendance date
+     * 
+     * @throws \Illuminate\Auth\Access\AuthorizationException If user is not authorized
+     * @return \Illuminate\Http\RedirectResponse Redirects back with success/error message
+     */
     public function store(StoreAttendanceRequest $request)
     {
         $this->authorize('takeAttendance', [Attendance::class, $request->class_id, $request->subject_id]);

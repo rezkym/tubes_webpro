@@ -12,6 +12,16 @@ use Illuminate\Support\Facades\DB;
 
 class TeacherHomeController extends Controller
 {
+    /**
+     * Display the teacher's dashboard/home page
+     * 
+     * This method retrieves and displays:
+     * - Today's class schedule for the authenticated teacher
+     * - Recent attendance records (last 5)
+     * - Today's attendance statistics grouped by status
+     *
+     * @return \Illuminate\View\View Returns the teacher's dashboard view with schedule, attendance and stats data
+     */
     public function index()
     {
         $teacher = Auth::user()->teacherProfile;
