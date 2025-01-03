@@ -10,6 +10,24 @@ use Carbon\Carbon;
 
 class StudentHomeController extends Controller
 {
+    /**
+     * Display the student's home dashboard.
+     * 
+     * This method retrieves and displays:
+     * - Today's class schedule based on the current day
+     * - Student's recent attendance history (last 10 records)
+     * - Monthly attendance statistics grouped by status
+     *
+     * The method performs the following operations:
+     * 1. Gets the authenticated student's profile
+     * 2. Determines current day of the week
+     * 3. Retrieves schedule for current day with subject and teacher details
+     * 4. Fetches recent attendance history
+     * 5. Calculates attendance statistics for the past month
+     *
+     * @return \Illuminate\View\View Returns the student dashboard view with schedule, 
+     *                               attendance history and statistics data
+     */
     public function index()
     {
         $student = Auth::user()->studentProfile;
