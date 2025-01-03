@@ -32,19 +32,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
     Route::resource('students', StudentProfileController::class);
 
-    
+
     Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('attendance/get-students', [AttendanceController::class, 'getStudents'])->name('attendance.getStudents');
     Route::get('attendance/{class}/{subject}/{date}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
     Route::put('attendance/{class}/{subject}/{date}', [AttendanceController::class, 'update'])->name('attendance.update');
-    
+
     // Role-specific routes
     Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/', [AdminHomeController::class, 'index'])->name('admin.home');
         Route::resource('school-classes', SchoolClassController::class)->middleware('permission:manage classes');
-        Route::resource('school-subjects', SchoolSubjectController::class);
+        Route::resource('school-subjects', SchoolSubjectController::class)
+            ->middleware(['role:admin|teacher']);
         Route::resource('teachers', TeacherProfileController::class);
         Route::resource('users', UserController::class);
         Route::post('teachers/{teacher}/assign-classes', [TeacherProfileController::class, 'assignClasses'])->name('teachers.assign-classes');
@@ -67,11 +68,10 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/test', function () {
     // get teacher class
     $teacher = User::find(4)->teacherProfile;
-    
+
     $class = SchoolClass::all();
 
     foreach ($class as $c) {
         print($teacher->classes);
     }
-
 });
