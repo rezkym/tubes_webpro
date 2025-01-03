@@ -72,6 +72,18 @@ class AttendanceController extends Controller
         return view('attendance.index', compact('attendances', 'classes', 'subjects'));
     }
 
+    /**
+     * Show the form for creating a new attendance record.
+     * 
+     * This method performs the following:
+     * - Authorizes the user for attendance creation
+     * - Retrieves the teacher profile if user has teacher role
+     * - Gets classes associated with the teacher or all classes if not a teacher
+     * - Gets subjects taught by the teacher or all subjects if not a teacher
+     * 
+     * @return \Illuminate\View\View Returns the attendance creation view with classes and subjects data
+     * @throws \Illuminate\Auth\Access\AuthorizationException If user is not authorized
+     */
     public function create()
     {
         $this->authorize('create', Attendance::class);
